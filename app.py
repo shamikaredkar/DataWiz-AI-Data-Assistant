@@ -27,16 +27,12 @@ with st.sidebar:
     ''')
     st.divider()
     
-#Initialize the ket in the session state
+# Initialize the key in the session state
 if 'clicked' not in st.session_state:
-    st.session_state.clicked = {1:False}
-    
-#Function to update the value in the session state
-def clicked(button):
-    st.session_state.clicked[button] = True
-st.button("Let's dive in!", on_click = clicked, args=[])
-if st.session_state.clicked[1]:
+    st.session_state.clicked = False
+
+if st.button("Let's dive in!"):
     st.header('Your Smart Data Science Companion')
     st.subheader('Unleashing the Power of Data, Together!')
     user_csv = st.file_uploader('Upload your file here', type='csv')
-    
+    st.session_state.clicked = True
