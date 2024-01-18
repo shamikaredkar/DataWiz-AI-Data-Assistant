@@ -97,6 +97,7 @@ if st.session_state.clicked:
             st.write(new_features)
             return
         
+        #Visualizing the data
         @st.cache_data
         def function_question_variable():
             st.line_chart(df, y=[user_question])
