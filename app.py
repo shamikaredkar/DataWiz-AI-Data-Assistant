@@ -8,11 +8,19 @@ from langchain_community.llms import OpenAI
 from langchain_experimental.agents import create_pandas_dataframe_agent
 from dotenv import load_dotenv, find_dotenv
 
+#OPENAI KEY
+# Load environment variables from a .env file
+load_dotenv(find_dotenv())
+
+# Set the OPENAI_API_KEY environment variable
+os.environ['OPENAI_API_KEY'] = apikey
+
 #LLM
     #Our ai assistant relies on llm to provide natural language  understanding and creating generic responses
     #Temperature=0 because temperature controls the randomness, the higher the model the more creative. 
     #We’re gonna keep the temperature low to make the responses more deterministic 
 llm = OpenAI(temperature=0)
+
 
 #Main
 st.title('DataWiz: AI Assitant for Data Science')
@@ -32,8 +40,7 @@ with st.sidebar:
         Ready to join forces and explore the possibilities hidden in your data?
     ''')
     
-    with st.expander('What are the steps of Exploratory Data Analysis'):
-        st.write(llm('What are the steps of Exploratory Data Analysis'))
+    
     
     st.divider()
     
@@ -49,8 +56,12 @@ if st.button("Let's dive in!"):
 
     #if the user's csv really exists, converting user's CSV into a dataframe
     if user_csv is not None:
-        user_csv.seek[0]
+        user_csv.see(0)
         df = pd.read_csv(user_csv, low_memory=False)
+
+with st.sidebar:
+    with st.expander('What are the steps of Exploratory Data Analysis'):
+        st.write(llm('What are the steps of Exploratory Data Analysis'))
     
 
     
