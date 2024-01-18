@@ -113,6 +113,12 @@ if st.session_state.clicked:
             missing_values = pandas_agent.run(f"Determine the extent of missing values of {user_question}")
             st.write(missing_values)
             return
+        
+        @st.cache_data
+        def function_question_dataframe():
+            dataframe_info =- pandas_agent.run(user_question_dataframe)
+            st.write(dataframe_info)
+            return
 
         # Main
         st.header("Exploratory Data analysis")
@@ -126,6 +132,15 @@ if st.session_state.clicked:
 
         st.subheader("Variable of study")
         user_question = st.text_input('What variable are you interested in?')
-        if user_question is not None and user_question != "":
+        if user_question is not None and user_question != (" ", "No", "no", "Nothing", "nothing"):
+            
             function_question_variable()
             st.subheader("Further_Study")
+        
+        if user_question:
+            user_question_dataframe = st.text_input("Is there anything you'd like to know about the dataframe?")
+            if user_question_dataframe is not None and user_question_dataframe != (" ", "No", "no", "Nothing", "nothing"):
+                function_question_dataframe()
+            if user_question_dataframe is (" ", "No", "no", "Nothing", "nothing"):
+                st.write(" ")
+            
