@@ -142,5 +142,5 @@ if st.session_state.clicked:
             if user_question_dataframe is not None and user_question_dataframe != (" ", "No", "no", "Nothing", "nothing"):
                 function_question_dataframe()
             if user_question_dataframe is (" ", "No", "no", "Nothing", "nothing"):
-                st.write(" ")
+                st.write("  ")
             
