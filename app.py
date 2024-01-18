@@ -126,5 +126,6 @@ if st.session_state.clicked:
 
         st.subheader("Variable of study")
         user_question = st.text_input('What variable are you interested in?')
-        
-        function_question_variable()
+        if user_question is not None and user_question != "":
+            function_question_variable()
+            st.subheader("Further_Study")
