@@ -3,7 +3,7 @@
 import streamlit as st
 import os
 import pandas as pd
-from langchain_community.llms import OpenAI
+from langchain_openai import OpenAI
 from langchain_experimental.agents import create_pandas_dataframe_agent
 from dotenv import load_dotenv, find_dotenv
 
@@ -49,9 +49,10 @@ with st.sidebar:
     
     st.divider()
     
-# Initialize the key in the session state
+# Initialize session state
 if 'clicked' not in st.session_state:
     st.session_state.clicked = False
+    st.session_state.df = None
 
 if st.button("Let's dive in!"):
     st.header('Your Smart Data Science Companion')
@@ -59,15 +60,31 @@ if st.button("Let's dive in!"):
     user_csv = st.file_uploader('Upload your file here', type='csv')
     st.session_state.clicked = True
 
-    #if the user's csv really exists, converting user's CSV into a dataframe
+    # If the user's CSV really exists, converting user's CSV into a dataframe
     if user_csv is not None:
-        user_csv.see(0)
-        df = pd.read_csv(user_csv, low_memory=False)
+        try:
+            user_csv.seek(0)  # Reset file pointer
+            df = pd.read_csv(user_csv, low_memory=False)
+            st.session_state.df = df  # Store DataFrame in session state
+            st.write("Uploaded DataFrame:")
+            st.write(df)
+        except Exception as e:
+            st.error(f"Error loading CSV file: {e}")
 
 with st.sidebar:
     with st.expander('What are the steps of Exploratory Data Analysis'):
         st.write(llm('What are the steps of Exploratory Data Analysis'))
     
+try:
+    # Creating pandas agents
+    pandas_agent = create_pandas_dataframe_agent(llm, df, verbose=True)
+
+    # Creating langchain agents - using pandas agent to answer specific questions about the data
+    question = 'What is the meaning of the columns'
+    columns_meaning = pandas_agent.run(question)
+    st.write(columns_meaning)
+except Exception as e:
+    st.error(f"Error creating pandas agent: {e}")
 
     
     
