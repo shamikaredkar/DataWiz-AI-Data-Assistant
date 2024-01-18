@@ -51,6 +51,9 @@ with st.sidebar:
     ''')
 
     st.divider()
+with st.sidebar:
+    with st.expander('What are the steps of Exploratory Data Analysis'):
+        st.write(llm('What are the steps of Exploratory Data Analysis'))
 
 if st.button("Let's dive in!"):
     st.session_state.clicked = True
@@ -59,6 +62,7 @@ if st.button("Let's dive in!"):
 if st.session_state.clicked:
     st.header('Your Smart Data Science Companion')
     st.subheader('Unleashing the Power of Data, Together!')
+
 
     user_csv = st.file_uploader('Upload your file here', type='csv')
 
@@ -69,21 +73,44 @@ if st.session_state.clicked:
             df = pd.read_csv(user_csv, low_memory=False)
             st.session_state.df = df  # Store DataFrame in session state
             st.write("Uploaded DataFrame:")
-            st.write(df)
+            #st.write(df)
 
             # Creating pandas agents
             pandas_agent = create_pandas_dataframe_agent(llm, df, verbose=True)
 
             # Creating langchain agents - using pandas agent to answer specific questions about the data
-            question = 'What is the meaning of the columns'
-            columns_meaning = pandas_agent.run(question)
-            st.write(columns_meaning)
+            #try:
+                #question = 'What is the meaning of the columns'
+                #columns_meaning = pandas_agent.run(question)
+                #st.write(columns_meaning)
+            #except Exception as e:
+                #st.error(f"Error in LangChain agent: {e}")
+            def function_agent():
+                st.write("**Data Overview**")
+                st.write("The first few rows of your data set look like this:")
+                st.write(df.head())
+                st.write("**Data Cleaning**")
+                columns_df = pandas_agent.run("What is the meaning of the columns")
+                st.write(columns_df)
+                missing_values = pandas_agent.run("How many missing values does this dataframe have? Start the answer with 'There are'")
+                st.write(missing_values)
+                duplicates = pandas_agent.run("Are there any duplicate values and if so where?")
+                st.write(duplicates)
+                st.write("**Data Summarization**")
+                st.write(df.describe())
+                correlation_analysis = pandas_agent.run("Calculate correlations between numerical variables to identify potential relationships")
+                st.write(correlation_analysis)
+                outliers = pandas_agent.run("Identify outliers in the data that may be erroneous or that may have a significant impact on the analysis.") 
+                st.write(outliers)
+                new_features = pandas_agent.run("What new features would be interesting to create?.")
+                st.write(new_features)
+                return
+            function_agent()  
         except Exception as e:
             st.error(f"Error loading CSV file: {e}")
 
-with st.sidebar:
-    with st.expander('What are the steps of Exploratory Data Analysis'):
-        st.write(llm('What are the steps of Exploratory Data Analysis'))
+
+
 
     
     
