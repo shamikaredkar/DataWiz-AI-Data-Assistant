@@ -1,6 +1,5 @@
 #Importing required libraries
 
-import apikey as apikey
 import streamlit as st
 import os
 import pandas as pd
@@ -8,13 +7,19 @@ from langchain_community.llms import OpenAI
 from langchain_experimental.agents import create_pandas_dataframe_agent
 from dotenv import load_dotenv, find_dotenv
 
-#OPENAI KEY
-# Load environment variables from a .env file
-load_dotenv(find_dotenv())
+# Load environment variables from a specific path
+dotenv_path = '/Users/shamikaredkar/Documents/Documents/AI Data Assistant/AI-Data-Assitant/.env'  # Replace with the full path to your .env file
+load_dotenv(dotenv_path)
 
-# Set the OPENAI_API_KEY environment variable
-os.environ['OPENAI_API_KEY'] = apikey
+# Retrieve the API key from the environment variable
+apikey = os.getenv('OPENAI_API_KEY')
 
+if apikey:
+    # Continue with API operations
+    openai_client = OpenAI(api_key=apikey)
+else:
+    st.error("API key not found in environment variables.")
+    
 #LLM
     #Our ai assistant relies on llm to provide natural language  understanding and creating generic responses
     #Temperature=0 because temperature controls the randomness, the higher the model the more creative. 
