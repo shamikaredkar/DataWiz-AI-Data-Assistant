@@ -57,7 +57,6 @@ if st.session_state.clicked:
         user_csv.seek(0)  # Reset file pointer
         df = pd.read_csv(user_csv, low_memory=False)
         st.session_state.df = df  # Store DataFrame in session state
-        st.write("Uploaded DataFrame:")
         
         # LLM
         # Our AI assistant relies on LLM to provide natural language understanding and create generic responses
