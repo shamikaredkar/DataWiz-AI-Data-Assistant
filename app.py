@@ -65,7 +65,7 @@ if st.session_state.clicked:
         llm = OpenAI(temperature=0)
         
         # Function sidebar
-        @st.cache_data
+        @st.cache_data(allow_output_mutation=True)
         def steps_eda():
             steps_eda = llm('What are the steps of Exploratory Data Analysis')
             return steps_eda
@@ -74,7 +74,7 @@ if st.session_state.clicked:
         pandas_agent = create_pandas_dataframe_agent(llm, df, verbose=True)
 
         # Functions of the main script:
-        @st.cache_data
+        @st.cache_data(allow_output_mutation=True)
         def function_agent():
             st.write("**Data Overview**")
             st.write("The first few rows of your data set look like this:")
@@ -97,25 +97,25 @@ if st.session_state.clicked:
             return
         
         #Visualizing the data
-        @st.cache_data
+        @st.cache_data(allow_output_mutation=True)
         def function_question_variable():
             #Summary of statistics of user question variable
-            summary_statistics = pandas_agent.run("Give me a summary of the statistics of {user_question_variable}")
+            summary_statistics = pandas_agent.run("Give me a summary of the statistics of {user_question}: ")
             st.line_chart(df, y=[user_question])
             st.write(summary_statistics)
-            normality = pandas_agent.run(f"Check for normality or specific distribution shapes of {user_question}")
+            normality = pandas_agent.run(f"Check for normality or specific distribution shapes of {user_question}: ")
             st.write(normality)
-            outliers = pandas_agent.run(f"Assess the presence of outliers of {user_question}")
+            outliers = pandas_agent.run(f"Assess the presence of outliers of {user_question}: ")
             st.write(outliers)
-            trends = pandas_agent.run(f"Analyse trends, seasonality, and cyclic patterns of {user_question}")
+            trends = pandas_agent.run(f"Analyse trends, seasonality, and cyclic patterns of {user_question}: ")
             st.write(trends)
-            missing_values = pandas_agent.run(f"Determine the extent of missing values of {user_question}")
+            missing_values = pandas_agent.run(f"Determine the extent of missing values of {user_question}: ")
             st.write(missing_values)
             return
         
-        @st.cache_data
+        @st.cache_data(allow_output_mutation=True)
         def function_question_dataframe():
-            dataframe_info =- pandas_agent.run(user_question_dataframe)
+            dataframe_info = pandas_agent.run(user_question_dataframe)
             st.write(dataframe_info)
             return
 
@@ -124,8 +124,8 @@ if st.session_state.clicked:
         st.subheader("General Information about the data set")
 
         with st.sidebar:
-            with st.expander('What are the steps of Exploratory Data Analysis'):
-                st.write(steps_eda())
+            with st.expander('What are the steps of Exploratory Data Analysis?'):
+                st.write(steps_eda)
         
         function_agent()
 
