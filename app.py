@@ -170,10 +170,14 @@ if st.session_state.clicked:
                 data_problem_chain = LLMChain(llm=llm, prompt=data_problem_template, verbose=True)
                 
                 model_selection_chain = LLMChain(llm=llm, prompt=model_selection_template, verbose=True)
-
+                
+                sequential_chain = SimpleSequentialChain(chains=[data_problem_chain, model_selection_chain])
                 
                 if prompt:
-                    response = data_problem_chain.run(business_problem = prompt)
+                    response = sequential_chain.run(prompt)
+                    business_response = data_problem_chain.run(business_problem = prompt)
+                    st.write(business_response)
+                    st.write("List of suitable machine learning algorithms: ")
                     st.write(response)
                         
             
