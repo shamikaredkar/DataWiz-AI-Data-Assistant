@@ -6,7 +6,7 @@ import pandas as pd
 from langchain_openai import OpenAI
 from langchain_experimental.agents import create_pandas_dataframe_agent
 from dotenv import load_dotenv, find_dotenv
-
+import openai
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain, SimpleSequentialChain, SequentialChain
 from langchain.agents.agent_toolkits import create_python_agent
@@ -23,7 +23,7 @@ apikey = os.getenv('OPENAI_API_KEY')
 
 if apikey:
     # Continue with API operations
-    openai_client = OpenAI(api_key=apikey)
+    openai.api_key = apikey
 else:
     st.error("API key not found in environment variables.")
     
@@ -155,4 +155,9 @@ if st.session_state.clicked:
                     st.header("Data Science Problem")
                     st.write("Now that we have a solid grasp of the data at hand and a clear understanding of the variable we intend to investigate, it's important that we reframe our business problem into a data science problem.")
                     
+                    prompt = st.text_input("Add your prompt here: ")
+                    if prompt:
+                        response = llm(prompt)
+                        st.write(response)
+                        
             
