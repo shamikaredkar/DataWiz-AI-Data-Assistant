@@ -162,7 +162,15 @@ if st.session_state.clicked:
                     template = 'Convert the following business problem into a data science problem {business_problem}'
                 )
                 
+                model_selection_template = PromptTemplate(
+                    input_variables = ['data_problem'],
+                    template = 'Give a list of suitable machine learning algorithms to solve this problem {data_problem}'
+                )
+                
                 data_problem_chain = LLMChain(llm=llm, prompt=data_problem_template, verbose=True)
+                
+                model_selection_chain = LLMChain(llm=llm, prompt=model_selection_template, verbose=True)
+
                 
                 if prompt:
                     response = data_problem_chain.run(business_problem = prompt)
