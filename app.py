@@ -149,4 +149,10 @@ if st.session_state.clicked:
                 function_question_dataframe()
             if user_question_dataframe == ("No", "no", "Nothing", "nothing"):
                 st.write(" ")
+                
+                if user_question_dataframe:
+                    st.divider()
+                    st.header("Data Science Problem")
+                    st.write("Now that we have a solid grasp of the data at hand and a clear understanding of the variable we intend to investigate, it's important that we reframe our business problem into a data science problem.")
+                    
             
