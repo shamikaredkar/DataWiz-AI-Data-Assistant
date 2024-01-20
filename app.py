@@ -65,7 +65,7 @@ if st.session_state.clicked:
         llm = OpenAI(temperature=0)
         
         # Function sidebar
-        @st.cache_data()
+        #@st.cache_data()
         def steps_eda():
             steps_eda = llm('What are the steps of Exploratory Data Analysis')
             return steps_eda
@@ -74,7 +74,7 @@ if st.session_state.clicked:
         pandas_agent = create_pandas_dataframe_agent(llm, df, verbose=True)
 
         # Functions of the main script:
-        @st.cache_data()
+        #@st.cache_data()
         def function_agent():
             st.write("**Data Overview**")
             st.write("The first few rows of your data set look like this:")
@@ -97,7 +97,7 @@ if st.session_state.clicked:
             return
         
         #Visualizing the data
-        @st.cache_data()
+        #@st.cache_data()
         def function_question_variable():
             #Summary of statistics of user question variable
             summary_statistics = pandas_agent.run("Give me a summary of the statistics of {user_question}: ")
@@ -113,7 +113,7 @@ if st.session_state.clicked:
             st.write(missing_values)
             return
         
-        @st.cache_data()
+        #@st.cache_data()
         def function_question_dataframe():
             dataframe_info = pandas_agent.run(user_question_dataframe)
             st.write(dataframe_info)
