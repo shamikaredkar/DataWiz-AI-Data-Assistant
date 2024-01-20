@@ -162,8 +162,10 @@ if st.session_state.clicked:
                     template = 'Convert the following business problem into a data science problem {business_problem}'
                 )
                 
+                data_problem_chain = LLMChain(llm=llm, prompt=data_problem_template, verbose=True)
+                
                 if prompt:
-                    response = llm(prompt)
+                    response = data_problem_chain.run(business_problem = prompt)
                     st.write(response)
                         
             
