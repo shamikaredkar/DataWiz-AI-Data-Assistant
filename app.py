@@ -72,7 +72,7 @@ if st.session_state.clicked:
         llm = OpenAI(temperature=0)
         
         # Function sidebar
-        #@st.cache_data()
+        @st.cache_data()
         def steps_eda():
             steps_eda = llm('What are the steps of Exploratory Data Analysis')
             return steps_eda
@@ -81,7 +81,7 @@ if st.session_state.clicked:
         pandas_agent = create_pandas_dataframe_agent(llm, df, verbose=True)
 
         # Functions of the main script:
-        #@st.cache_data()
+        @st.cache_data()
         def function_agent():
             st.write("**Data Overview**")
             st.write("The first few rows of your data set look like this:")
@@ -104,7 +104,7 @@ if st.session_state.clicked:
             return
         
         #Visualizing the data
-        #@st.cache_data()
+        @st.cache_data()
         def function_question_variable():
             #Summary of statistics of user question variable
             summary_statistics = pandas_agent.run("Give me a summary of the statistics of {user_question}: ")
@@ -120,7 +120,7 @@ if st.session_state.clicked:
             st.write(missing_values)
             return
         
-        #@st.cache_data()
+        @st.cache_data()
         def function_question_dataframe():
             dataframe_info = pandas_agent.run(user_question_dataframe)
             st.write(dataframe_info)
@@ -138,26 +138,26 @@ if st.session_state.clicked:
 
         st.subheader("Variable of study")
         user_question = st.text_input('What variable are you interested in?')
-        if user_question is not None and user_question != (" ", "No", "no", "Nothing", "nothing"):
+        if user_question is not None and user_question != ("No", "no", "Nothing", "nothing"):
             
             function_question_variable()
             st.subheader("Further_Study")
         
         if user_question:
             user_question_dataframe = st.text_input("Is there anything you'd like to know about the dataframe?")
-            if user_question_dataframe is not None and user_question_dataframe != (" ", "No", "no", "Nothing", "nothing"):
+            if user_question_dataframe is not None and user_question_dataframe not in ("","no","No"):
                 function_question_dataframe()
-            if user_question_dataframe == ("No", "no", "Nothing", "nothing"):
-                st.write(" ")
+            if user_question_dataframe in ("no", "No"):
+                st.write("")
                 
-                if user_question_dataframe:
-                    st.divider()
-                    st.header("Data Science Problem")
-                    st.write("Now that we have a solid grasp of the data at hand and a clear understanding of the variable we intend to investigate, it's important that we reframe our business problem into a data science problem.")
+            if user_question_dataframe:
+                st.divider()
+                st.header("Data Science Problem")
+                st.write("Now that we have a solid grasp of the data at hand and a clear understanding of the variable we intend to investigate, it's important that we reframe our business problem into a data science problem.")
                     
-                    prompt = st.text_input("Add your prompt here: ")
-                    if prompt:
-                        response = llm(prompt)
-                        st.write(response)
+                prompt = st.text_input("Add your prompt here: ")
+                if prompt:
+                    response = llm(prompt)
+                    st.write(response)
                         
             
