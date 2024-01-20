@@ -7,6 +7,13 @@ from langchain_openai import OpenAI
 from langchain_experimental.agents import create_pandas_dataframe_agent
 from dotenv import load_dotenv, find_dotenv
 
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain, SimpleSequentialChain, SequentialChain
+from langchain.agents.agent_toolkits import create_python_agent
+from langchain.tools.python.tool import PythonREPLTool 
+from langchain.agents.agent_types import AgentType
+from langchain.utilities import WikipediaAPIWrapper
+
 # Load environment variables from a specific path
 dotenv_path = '/Users/shamikaredkar/Documents/Documents/AI Data Assistant/AI-Data-Assitant/.env'  # Replace with the full path to your .env file
 load_dotenv(dotenv_path)
@@ -140,6 +147,6 @@ if st.session_state.clicked:
             user_question_dataframe = st.text_input("Is there anything you'd like to know about the dataframe?")
             if user_question_dataframe is not None and user_question_dataframe != (" ", "No", "no", "Nothing", "nothing"):
                 function_question_dataframe()
-            if user_question_dataframe == (" ", "No", "no", "Nothing", "nothing"):
-                st.write("  ")
+            if user_question_dataframe == ("No", "no", "Nothing", "nothing"):
+                st.write(" ")
             
