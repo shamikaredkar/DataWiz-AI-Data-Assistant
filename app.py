@@ -9,8 +9,8 @@ from dotenv import load_dotenv, find_dotenv
 import openai
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain, SimpleSequentialChain, SequentialChain
-from langchain.agents.agent_toolkits import create_python_agent
-from langchain.tools.python.tool import PythonREPLTool 
+#
+from langchain_experimental.tools.python.tool import PythonREPLTool
 from langchain.agents.agent_types import AgentType
 from langchain.utilities import WikipediaAPIWrapper
 
@@ -23,7 +23,7 @@ apikey = os.getenv('OPENAI_API_KEY')
 
 if apikey:
     # Continue with API operations
-    openai.api_key = apikey
+    openai_client = OpenAI(api_key=apikey)
 else:
     st.error("API key not found in environment variables.")
     
