@@ -125,7 +125,38 @@ if st.session_state.clicked:
             dataframe_info = pandas_agent.run(user_question_dataframe)
             st.write(dataframe_info)
             return
-
+        
+        @st.cache_data()
+        def wiki(prompt):
+            wiki_research = WikipediaAPIWrapperAPIWrapper().run(prompt)
+            return wiki_research
+        
+        @st.cache_data
+        def prompt_template():
+            data_problem_template = PromptTemplate(
+                input_variables = ['business_problem'],
+                template = 'Convert the following business problem into a data science problem {business_problem}'
+                )
+                
+            model_selection_template = PromptTemplate(
+                input_variables = ['data_problem'],
+                template = 'Give a list of suitable machine learning algorithms to solve this problem {data_problem} while using Wikipedia reserahc: {wikipedia_research}'
+                )
+            return data_problem_template, model_selection_template
+            
+        @st.cache_data
+        def chains():
+            data_problem_chain = LLMChain(llm=llm, prompt=prompt_template()[0], verbose=True, output_key='data_problem')    
+            model_selection_chain = LLMChain(llm=llm, prompt=prompt_template()[1], verbose=True, output_key='model_selection')
+            sequential_chain = SequentialChain(chains=[data_problem_chain, model_selection_chain], input_variables=['business_problem'], output_key=['data_problem', 'model_selection'], verbose=True)
+            return sequential_chain
+        
+        def chains_output(prompt, wiki_research):
+            my_chain = chains()
+            my_chain_output = my_chain({'business_problem': prompt, 'wikipedia_research': wiki_research})
+            my_data_problem = my_chain_output["data_problem"]
+            my_model_selection = my_chain_output["model_selection"]
+            return my_data_problem, my_model_selection
         # Main
         st.header("Exploratory Data analysis")
         st.subheader("General Information about the data set")
@@ -157,27 +188,11 @@ if st.session_state.clicked:
                     
                 prompt = st.text_input("Add your prompt here: ")
                 
-                data_problem_template = PromptTemplate(
-                    input_variables = ['business_problem'],
-                    template = 'Convert the following business problem into a data science problem {business_problem}'
-                )
-                
-                model_selection_template = PromptTemplate(
-                    input_variables = ['data_problem'],
-                    template = 'Give a list of suitable machine learning algorithms to solve this problem {data_problem}'
-                )
-                
-                data_problem_chain = LLMChain(llm=llm, prompt=data_problem_template, verbose=True)
-                
-                model_selection_chain = LLMChain(llm=llm, prompt=model_selection_template, verbose=True)
-                
-                sequential_chain = SimpleSequentialChain(chains=[data_problem_chain, model_selection_chain])
-                
                 if prompt:
-                    response = sequential_chain.run(prompt)
-                    business_response = data_problem_chain.run(business_problem = prompt)
-                    st.write(business_response)
-                    st.write("List of suitable machine learning algorithms: ")
-                    st.write(response)
+                    response = sequential_chain({'business_problem': prompt})
+                    #business_response = data_problem_chain.run(business_problem = prompt)
+                    st.write(response['data_problem'])
+                    #st.write("List of suitable machine learning algorithms: ")
+                    st.write(response['model_selection'])
                         
             
