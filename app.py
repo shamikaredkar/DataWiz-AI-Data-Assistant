@@ -107,7 +107,7 @@ if st.session_state.clicked:
         @st.cache_data()
         def function_question_variable():
             #Summary of statistics of user question variable
-            summary_statistics = pandas_agent.run("Give me a summary of the statistics of {user_question}: ")
+            summary_statistics = pandas_agent.run(f"Give me a summary of the statistics of {user_question}: ")
             st.line_chart(df, y=[user_question])
             st.write(summary_statistics)
             normality = pandas_agent.run(f"Check for normality or specific distribution shapes of {user_question}: ")
@@ -126,13 +126,13 @@ if st.session_state.clicked:
             st.write(dataframe_info)
             return
         
-        @st.cache_data()
+        @st.cache_resource()
         def wiki(prompt):
-            wiki_research = WikipediaAPIWrapperAPIWrapper().run(prompt)
+            wiki_research = WikipediaAPIWrapper().run(prompt)
             return wiki_research
         
-        @st.cache_data
-        def prompt_template():
+        @st.cache_data()
+        def prompt_templates():
             data_problem_template = PromptTemplate(
                 input_variables = ['business_problem'],
                 template = 'Convert the following business problem into a data science problem {business_problem}'
@@ -140,23 +140,25 @@ if st.session_state.clicked:
                 
             model_selection_template = PromptTemplate(
                 input_variables = ['data_problem'],
-                template = 'Give a list of suitable machine learning algorithms to solve this problem {data_problem} while using Wikipedia reserahc: {wikipedia_research}'
+                template = 'Give a list of suitable machine learning algorithms to solve this problem {data_problem}, while using Wikipedia research: {wikipedia_research}'
                 )
             return data_problem_template, model_selection_template
             
-        @st.cache_data
+        @st.cache_data()
         def chains():
-            data_problem_chain = LLMChain(llm=llm, prompt=prompt_template()[0], verbose=True, output_key='data_problem')    
-            model_selection_chain = LLMChain(llm=llm, prompt=prompt_template()[1], verbose=True, output_key='model_selection')
-            sequential_chain = SequentialChain(chains=[data_problem_chain, model_selection_chain], input_variables=['business_problem'], output_key=['data_problem', 'model_selection'], verbose=True)
+            data_problem_chain = LLMChain(llm=llm, prompt=prompt_templates()[0], verbose=True, output_key='data_problem')    
+            model_selection_chain = LLMChain(llm=llm, prompt=prompt_templates()[1], verbose=True, output_key='model_selection')
+            sequential_chain = SequentialChain(chains=[data_problem_chain, model_selection_chain], input_variables=['business_problem', 'wikipedia_research'], output_variables=['data_problem', 'model_selection'], verbose=True)
             return sequential_chain
         
         def chains_output(prompt, wiki_research):
             my_chain = chains()
+            # The input dictionary now includes 'wikipedia_research' key.
             my_chain_output = my_chain({'business_problem': prompt, 'wikipedia_research': wiki_research})
             my_data_problem = my_chain_output["data_problem"]
             my_model_selection = my_chain_output["model_selection"]
             return my_data_problem, my_model_selection
+        
         # Main
         st.header("Exploratory Data analysis")
         st.subheader("General Information about the data set")
@@ -176,7 +178,7 @@ if st.session_state.clicked:
         
         if user_question:
             user_question_dataframe = st.text_input("Is there anything you'd like to know about the dataframe?")
-            if user_question_dataframe is not None and user_question_dataframe not in ("","no","No"):
+            if user_question_dataframe is not None and user_question_dataframe not in ("no","No"):
                 function_question_dataframe()
             if user_question_dataframe in ("no", "No"):
                 st.write("")
@@ -186,13 +188,16 @@ if st.session_state.clicked:
                 st.header("Data Science Problem")
                 st.write("Now that we have a solid grasp of the data at hand and a clear understanding of the variable we intend to investigate, it's important that we reframe our business problem into a data science problem.")
                     
-                prompt = st.text_input("Add your prompt here: ")
+                prompt = st.text_area("What is the business problem you would like to solve?")
                 
                 if prompt:
-                    response = sequential_chain({'business_problem': prompt})
+                    wiki_research = wiki(prompt)  # Ensure this call returns the expected data.
+                    my_data_problem = chains_output(prompt, wiki_research)[0]
+                    my_model_selection = chains_output(prompt, wiki_research)[1]
+                    #response = sequential_chain({'business_problem': prompt})
                     #business_response = data_problem_chain.run(business_problem = prompt)
-                    st.write(response['data_problem'])
+                    st.write(my_data_problem)
                     #st.write("List of suitable machine learning algorithms: ")
-                    st.write(response['model_selection'])
+                    st.write(my_model_selection)
                         
             
